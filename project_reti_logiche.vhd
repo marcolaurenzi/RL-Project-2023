@@ -17,6 +17,10 @@ entity project_reti_logiche is
         o_mem_addr      : out std_logic_vector(15 downto 0);
         i_mem_data      : in std_logic_vector(7 downto 0);
         o_mem_we        : out std_logic;
-        o_mem_en        : out std_logic
+        o_mem_en        : out std_logic;
     );
 end project_reti_logiche;
+
+architecture Behavioral of project_reti_logiche is
+    
+end Behavioral;
