@@ -7,19 +7,19 @@ end demux_tb;
 
 architecture Behavioral of demux_tb is
 
-component demux is
-    port(   s:      in  std_logic_vector(0 to 4);
-            x:      in  std_logic;
-            y0, y1, y2, y3, y4, y5, y6, y7, y8, y9, y10, y11, y12, y13, y14, y15, y16, y17: out std_logic 
+component demux1 is
+    port(   s                                                                               :       in  std_logic_vector(0 to 4);
+            x                                                                               :       in  std_logic;
+            y0, y1, y2, y3, y4, y5, y6, y7, y8, y9, y10, y11, y12, y13, y14, y15, y16, y17  :       out std_logic 
         );
 end component;
 
-signal s                                                                                    :           std_logic_vector(0 to 4);
-signal x                                                                                    :           std_logic;
-signal y0, y1, y2, y3, y4, y5, y6, y7, y8, y9, y10, y11, y12, y13, y14, y15, y16, y17       :           std_logic 
+signal s                                                                                    :       std_logic_vector(0 to 4);
+signal x                                                                                    :       std_logic;
+signal y0, y1, y2, y3, y4, y5, y6, y7, y8, y9, y10, y11, y12, y13, y14, y15, y16, y17       :       std_logic 
 
 begin
-    TOP0 : demux port map(
+    TOP0 : demux1 port map(
         s,                                                                                  
         x,                                                                                    
         y0, y1, y2, y3, y4, y5, y6, y7, y8, y9, y10, y11, y12, y13, y14, y15, y16, y17  
@@ -43,11 +43,6 @@ begin
 
     process
     begin
-        x <= '1';
-        x <= '0';
-        x <= '1';
-        x <= '0';
-        x <= '0';
         x <= '1';
         wait for 100 ns;
     end process;
