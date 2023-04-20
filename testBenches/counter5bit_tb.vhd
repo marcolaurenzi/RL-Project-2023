@@ -9,18 +9,21 @@ architecture Behavioral of counter5bit_tb is
 component counter5bit is
     Port(   CLK:   in  std_logic;
             RESET: in  std_logic;
+            START: in  std_logic;
             Y:     out std_logic_vector(0 to 4)
         );
 end component;
 
 signal CLK      :           std_logic;
 signal RESET    :           std_logic;
+signal START    :           std_logic;
 signal Y        :           std_logic_vector(0 to 4);
 
 begin
     TOP0 : counter5bit port map(
         CLK,
         RESET,
+        START,
         Y
     );
 
