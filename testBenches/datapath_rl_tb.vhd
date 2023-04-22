@@ -30,7 +30,7 @@ architecture Behavioral of datapath_rl is
     signal o_z0            :  std_logic_vector(7 downto 0);
     signal o_z1            :  std_logic_vector(7 downto 0);
     signal o_z2            :  std_logic_vector(7 downto 0);
-    signal _z3            :  std_logic_vector(7 downto 0);
+    signal 0_z3            :  std_logic_vector(7 downto 0);
     signal o_done          :  std_logic;
     signal o_mem_addr      : std_logic_vector(15 downto 0);
     signal i_mem_data      :  std_logic_vector(7 downto 0);
