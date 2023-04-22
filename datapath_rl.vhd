@@ -21,28 +21,23 @@ end datapath;
 
 architecture Behavioral of datapath is
 
-component counter5bit is
-    Port(   CLK:   in  std_logic;
-            RESET: in  std_logic;
-            Y:     out std_logic_vector(0 to 4)
-        );
-end component;
-
-signal i_w_one : std_logic;
-signal i_w_star : std_logic;
+signal i_w_one : std_logic := '0';
+signal i_w_star : std_logic := '0';
 signal counter : std_logic_vector (0 to 4) := "00000";
-signal load_w : std_logic;
+signal load_w : std_logic := '0';
 signal i_w0, i_w1, i_w2, i_w3, i_w4, i_w5, i_w6, i_w7, i_w8, i_w9, i_w10, i_w11, i_w12, i_w13, i_w14, i_w15, i_w16, i_w17 : std_logic;
-signal addr_load : std_logic;
-signal i_mem_addr : std_logic_vector (0 to 15);
-signal o_cnl_select : std_logic_vector (0 to 1);
-signal o_mem_val : std std_logic_vector (0 to 7);
-signal val : std_logic_vector (0 to 7);
 signal load_val : std_logic;
-signal z0_star, z1_star, z2_star, z3_star : std_logic_vector (0 to 7);
+signal i_mem_addr : std_logic_vector (0 to 15) := "0000000000000000";
+signal o_cnl_select : std_logic_vector (0 to 1) := "00";
+signal o_mem_val : std std_logic_vector (0 to 7) := "00000000";
+signal val : std_logic_vector (0 to 7) := "00000000";
+signal load_val : std_logic := '0';
+signal z0_star, z1_star, z2_star, z3_star : std_logic_vector (0 to 7) := "00000000";
 signal z0_one, z1_one, z2_one, z3_one : std_logic_vector (0 to 7);
-signal load_z : std_logic;
+signal load_z : std_logic := '0';
 signal o_done_bus : std_logic_vector (o to 7) := "00000000";
+
+
 
 begin
 
@@ -326,6 +321,20 @@ begin
         end if;
     end process;
 
+    --memory
+    process(clk)
+    begin
+    if clk'event and clk = '1' then
+      if o_mem_en = '1' then
+        if o_mem_we = '1' then
+            o_mem_val <= "00000000";
+        else
+            o_mem_val <= "11111111" after 2 ns;
+        end if;
+      end if;
+    end if;
+  end process;
+
     -- memory register
     process (i_rst, i_clk)
     begin
@@ -405,8 +414,13 @@ begin
     begin
         if(load_z = '1') then
             o_done_bus = "11111111"
-            o_done = '0';
+            o_done = '1';
         end if;
     end process;
+
+    o_z0 = done_bus and z0_one;
+    o_z1 = done_bus and z1_one;
+    o_z2 = done_bus and z2_one;
+    o_z3 = done_bus and z3_one;
 
 end Behavioral;
