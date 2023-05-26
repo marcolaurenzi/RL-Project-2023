@@ -27,9 +27,8 @@ end project_reti_logiche;
 
 architecture Behavioral of project_reti_logiche is
 
-    -- i_w and i_start signal coming out from the first register
+    -- i_w and i_start signal
     signal w_star : std_logic;
-    signal load_w_star : std_logic; --loading signal
 
     -- counter computed value
     signal counter : std_logic_vector (0 to 4) := "00000";
@@ -39,6 +38,8 @@ architecture Behavioral of project_reti_logiche is
 
     -- 2 bit representing the output channel selected
     signal cnl_select : std_logic_vector (1 downto 0) := "00";
+    
+    signal memory : std_logic_vector (15 downto 0);
 
     -- value coming out of the second multiplexer
     signal z0_star, z1_star, z2_star, z3_star : std_logic_vector (0 to 7);
@@ -50,13 +51,14 @@ architecture Behavioral of project_reti_logiche is
     -- done bus signal used to mask and reveal the output values
     signal done_bus : std_logic_vector (0 to 7);
     
-    type S is (SIDLE,SRST,S0,S1,S2,S3,S4,S5,S6,S7,S8,S9,S10,S11,S12,S13,S14,S15,S16,S17,SMEM,SOUT);
+    type S is (SIDLE,SRST,S0,S1,S2,S3,S4,S5,S6,S7,S8,S9,S10,S11,S12,S13,S14,S15,S16,S17,SMEM,SOUT,SREAD);
     signal curr_state, next_state : S;
 
 begin
 
     -- input register, it acquires the input i_w as long as i_start is 1 and outputs it on w_star 
     w_star <= i_start and i_w;
+    o_mem_we <= '0';
 
     -- counter 0 to 17
     process(i_clk, i_rst, i_start)
@@ -65,6 +67,8 @@ begin
             counter <= "00000";
         elsif(i_clk'event and i_clk = '1' and i_start = '1') then
             counter <= counter + "00001";
+        elsif (i_start = '0' and i_clk'event and i_clk = '1') then
+            counter <= "00000";
         end if;
     end process;
 
@@ -136,194 +140,59 @@ begin
         end if;
     end process;
 
-    -- address register 2
+   -- address register 2
     process (i_rst, i_clk)
     begin
         if(i_rst = '1') then
-            o_mem_addr(15) <= '0';
+            o_mem_addr <= "0000000000000000";
         elsif (i_clk'event and i_clk = '1') then
             if(counter = "00011") then
-                o_mem_addr(15) <= w_bus(2);
-            end if;
-        end if;
-    end process;
-
-    -- address register 3
-    process (i_rst, i_clk)
-    begin
-        if(i_rst = '1') then
-            o_mem_addr(14) <= '0';
-        elsif (i_clk'event and i_clk = '1') then
-            if(counter = "00100") then
-                o_mem_addr(14) <= w_bus(3);
-            end if;
-        end if;
-    end process;
-
-    -- address register 4
-    process (i_rst, i_clk)
-    begin
-        if(i_rst = '1') then
-            o_mem_addr(13) <= '0';
-        elsif (i_clk'event and i_clk = '1') then
-            if(counter = "00101") then
-                o_mem_addr(13) <= w_bus(4);
-            end if;
-        end if;
-    end process;
-
-    -- address register 5
-    process (i_rst, i_clk)
-    begin
-        if(i_rst = '1') then
-            o_mem_addr(12) <= '0';
-        elsif (i_clk'event and i_clk = '1') then
-            if(counter = "00110") then
-                o_mem_addr(12) <= w_bus(5);
-            end if;
-        end if;
-    end process;
-
-    -- address register 6
-    process (i_rst, i_clk)
-    begin
-        if(i_rst = '1') then
-            o_mem_addr(11) <= '0';
-        elsif (i_clk'event and i_clk = '1') then
-            if(counter = "00111") then
-                o_mem_addr(11) <= w_bus(6);
-            end if;
-        end if;
-    end process;
-
-    -- address register 7
-    process (i_rst, i_clk)
-    begin
-        if(i_rst = '1') then
-            o_mem_addr(10) <= '0';
-        elsif (i_clk'event and i_clk = '1') then
-            if(counter = "01000") then
-                o_mem_addr(10) <= w_bus(7);
-            end if;
-        end if;
-    end process;
-
-    -- address register 8
-    process (i_rst, i_clk)
-    begin
-        if(i_rst = '1') then
-            o_mem_addr(9) <= '0';
-        elsif (i_clk'event and i_clk = '1') then
-            if(counter = "01001") then
-                o_mem_addr(9) <= w_bus(8);
-            end if;
-        end if;
-    end process;
-
-    -- address register 9
-    process (i_rst, i_clk)
-    begin
-        if(i_rst = '1') then
-            o_mem_addr(8) <= '0';
-        elsif (i_clk'event and i_clk = '1') then
-            if(counter = "01010") then
-                o_mem_addr(8) <= w_bus(9);
-            end if;
-        end if;
-    end process;
-
-    -- address register 10
-    process (i_rst, i_clk)
-    begin
-        if(i_rst = '1') then
-            o_mem_addr(7) <= '0';
-        elsif (i_clk'event and i_clk = '1') then
-            if(counter = "01011") then
-                o_mem_addr(7) <= w_bus(10);
-            end if;
-        end if;
-    end process;
-
-    -- address register 11
-    process (i_rst, i_clk)
-    begin
-        if(i_rst = '1') then
-            o_mem_addr(6) <= '0';
-        elsif (i_clk'event and i_clk = '1') then
-            if(counter = "01100") then
-                o_mem_addr(6) <= w_bus(11);
-            end if;
-        end if;
-    end process;
-
-    -- address register 12
-    process (i_rst, i_clk)
-    begin
-        if(i_rst = '1') then
-            o_mem_addr(5) <= '0';
-        elsif (i_clk'event and i_clk = '1') then
-            if(counter = "01101") then
-                o_mem_addr(5) <= w_bus(12);
-            end if;
-        end if;
-    end process;
-
-    -- address register 13
-    process (i_rst, i_clk)
-    begin
-        if(i_rst = '1') then
-            o_mem_addr(4) <= '0';
-        elsif (i_clk'event and i_clk = '1') then
-            if(counter = "01110") then
-                o_mem_addr(4) <= w_bus(13);
-            end if;
-        end if;
-    end process;
-
-    -- address register 14
-    process (i_rst, i_clk)
-    begin
-        if(i_rst = '1') then
-            o_mem_addr(3) <= '0';
-        elsif (i_clk'event and i_clk = '1') then
-            if(counter = "01111") then
-                o_mem_addr(3) <= w_bus(14);
-            end if;
-        end if;
-    end process;
-
-    -- address register 15
-    process (i_rst, i_clk)
-    begin
-        if(i_rst = '1') then
-            o_mem_addr(2) <= '0';
-        elsif (i_clk'event and i_clk = '1') then
-            if(counter = "10000") then
-                o_mem_addr(2) <= w_bus(15);
-            end if;
-        end if;
-    end process;
-
-    -- address register 16
-    process (i_rst, i_clk)
-    begin
-        if(i_rst = '1') then
-            o_mem_addr(1) <= '0';
-        elsif (i_clk'event and i_clk = '1') then
-            if(counter = "10001") then
-                o_mem_addr(1) <= w_bus(16);
-            end if;
-        end if;
-    end process;
-
-    -- address register 17
-    process (i_rst, i_clk)
-    begin
-        if(i_rst = '1') then
-            o_mem_addr(0) <= '0';
-        elsif (i_clk'event and i_clk = '1') then
-            if(counter = "10010") then
+                o_mem_addr(0) <= w_bus(2);
+            elsif(counter = "00100") then
+               o_mem_addr(0) <= w_bus(3);
+               o_mem_addr(1) <= w_bus(2);
+            elsif(counter = "00101") then
+                o_mem_addr(0) <= w_bus(4);
+                o_mem_addr(2 downto 1) <= w_bus(2 to 3); 
+            elsif(counter = "00110") then
+                o_mem_addr(0) <= w_bus(5);
+                o_mem_addr(3 downto 1) <= w_bus(2 to 4); 
+            elsif(counter = "00111") then
+                o_mem_addr(0) <= w_bus(6);
+                o_mem_addr(4 downto 1) <= w_bus(2 to 5);
+            elsif(counter = "01000") then
+                o_mem_addr(0) <= w_bus(7);
+                o_mem_addr(5 downto 1) <= w_bus(2 to 6);
+            elsif(counter = "01001") then
+                o_mem_addr(0) <= w_bus(8);
+                o_mem_addr(6 downto 1) <= w_bus(2 to 7);
+            elsif(counter = "01010") then
+                o_mem_addr(0) <= w_bus(9);
+                o_mem_addr(7 downto 1) <= w_bus(2 to 8);
+            elsif(counter = "01011") then
+                o_mem_addr(0) <= w_bus(10);
+                o_mem_addr(8 downto 1) <= w_bus(2 to 9);
+            elsif(counter = "01100") then
+                o_mem_addr(0) <= w_bus(11);
+                o_mem_addr(9 downto 1) <= w_bus(2 to 10);
+            elsif(counter = "01101") then
+                o_mem_addr(0) <= w_bus(12);
+                o_mem_addr(10 downto 1) <= w_bus(2 to 11);
+            elsif(counter = "01110") then
+                o_mem_addr(0) <= w_bus(13);
+                o_mem_addr(11 downto 1) <= w_bus(2 to 12);
+            elsif(counter = "01111") then
+                o_mem_addr(0) <= w_bus(14);
+                o_mem_addr(12 downto 1) <= w_bus(2 to 13);
+            elsif(counter = "10000") then
+                o_mem_addr(0) <= w_bus(15);
+                o_mem_addr(13 downto 1) <= w_bus(2 to 14);
+            elsif(counter = "10001") then
+                o_mem_addr(0) <= w_bus(16);
+                o_mem_addr(14 downto 1) <= w_bus(2 to 15);
+            elsif(counter = "10010") then
                 o_mem_addr(0) <= w_bus(17);
+                o_mem_addr(15 downto 1) <= w_bus(2 to 16);
             end if;
         end if;
     end process;
@@ -402,22 +271,13 @@ begin
 
     process(curr_state, i_clk)
     begin
-        case curr_state is
+            load_z <= '0';         
+            done_bus <= "00000000";
+            case curr_state is
             when SIDLE =>
-            when SRST => 
-                load_w_star <= '0';
                 o_mem_en <= '0';
-                o_mem_we <= '0';
-                load_z <= '0';
-                z0_star <= "00000000";
-                z1_star <= "00000000";
-                z2_star <= "00000000";
-                z3_star <= "00000000";
-                z0_one <= "00000000";
-                z1_one <= "00000000";
-                z2_one <= "00000000";
-                z3_one <= "00000000";             
-                done_bus <= "00000000";
+            when SRST => 
+                
             when S0 =>
             when S1 =>
             when S2 =>
@@ -437,13 +297,15 @@ begin
             when S17 =>
             when SMEM =>
                 o_mem_en <= '1';
-                o_mem_we <= '1';
             when SOUT =>
                 load_z <= '1';
-                done_bus <= "11111111";
+            when SREAD =>
+                o_mem_en <= '0';
+                done_bus <= "11111111";   
             when others =>
        
-        end case;
+            end case;
+       
     end process;
 
     -- funzione stato prossimo
@@ -468,6 +330,8 @@ begin
                     next_state <= S1;
                  elsif (i_rst = '1') then
                     next_state <= SRST;
+                 elsif i_start = '0' then
+                    next_state <= S0;
                 else
                     next_state <= SMEM;
                 end if;
@@ -600,7 +464,9 @@ begin
             when SMEM =>
                 next_state <= SOUT;
             when SOUT =>
-                next_state <= SIDLE;
+                next_state <= SREAD;
+            when SREAD =>
+                next_state <= S0;    
             when others =>
         end case;
         
