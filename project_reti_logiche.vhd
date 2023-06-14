@@ -280,7 +280,6 @@ BEGIN
 													done_bus <= "00000000";
 													CASE curr_state IS
 														WHEN SIDLE => 
-															o_mem_en <= '0';
 														WHEN SRST => 
 														WHEN S0 => 
 														WHEN S1 => 
@@ -344,6 +343,8 @@ BEGIN
 															WHEN S1 => 
 																IF i_start = '1' THEN
 																	next_state <= S2;
+																ELSIF (i_rst <= '1') THEN
+																	next_state <= SRST;
 																ELSE
 																	next_state <= SMEM;
 																END IF;
