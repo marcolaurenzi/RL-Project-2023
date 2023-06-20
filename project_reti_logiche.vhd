@@ -73,7 +73,7 @@ BEGIN
 	END PROCESS;
 
 	-- demultiplexer 1
-	PROCESS (i_clk, w_star)
+	PROCESS (i_clk, w_star, i_start)
 		BEGIN
 			IF (i_start = '1' AND i_clk'EVENT AND i_clk = '1') THEN
 				IF (counter = "00000") THEN
@@ -141,7 +141,7 @@ BEGIN
 				END PROCESS;
 
 				-- address register 2-17
-				PROCESS (i_rst, i_clk)
+				PROCESS (i_rst, i_clk, done_bus)
 					BEGIN
 						IF (i_rst = '1' or done_bus(0) = '1') THEN
 							o_mem_addr <= "0000000000000000";
